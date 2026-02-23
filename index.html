@@ -3,99 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المستشار المالي لصناع المحتوى 2026</title>
+    <title>Global Content Earning Calculator 2026</title>
     <style>
         :root {
-            --primary-color: #6c5ce7;
-            --secondary-color: #00cec9;
-            --bg-color: #f0f2f5;
-            --text-color: #2d3436;
+            --primary-color: #4834d4;
+            --secondary-color: #686de0;
+            --bg-color: #f6f9fc;
+            --text-color: #30336b;
         }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; display: flex; justify-content: center; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; display: flex; justify-content: center; transition: 0.3s; }
         .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
-        h1 { text-align: center; color: var(--primary-color); font-size: 24px; margin-bottom: 30px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 14px; }
-        select, input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px; font-size: 16px; outline: none; transition: 0.3s; }
+        h1 { text-align: center; color: var(--primary-color); font-size: 22px; margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+        select, input { width: 100%; padding: 12px; border: 2px solid #edeff2; border-radius: 10px; font-size: 15px; outline: none; transition: 0.3s; }
         select:focus, input:focus { border-color: var(--primary-color); }
-        .btn-calc { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3); transition: 0.3s; }
-        .btn-calc:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4); }
-        .result-box { margin-top: 30px; display: none; border-top: 2px dashed #eee; pt: 20px; }
-        .stat-card { background: #f9f9ff; padding: 15px; border-radius: 15px; margin-bottom: 15px; text-align: center; border-right: 5px solid var(--primary-color); }
-        .stat-value { display: block; font-size: 28px; font-weight: 800; color: var(--primary-color); }
-        .stat-label { font-size: 14px; color: #636e72; }
+        .btn-calc { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 12px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .result-box { margin-top: 25px; display: none; border-top: 2px solid #f1f2f6; pt: 20px; }
+        .stat-card { background: #f9f9ff; padding: 15px; border-radius: 12px; margin-bottom: 12px; text-align: center; border-left: 5px solid var(--primary-color); }
+        .stat-value { display: block; font-size: 26px; font-weight: 800; color: var(--primary-color); }
+        .lang-switcher { text-align: center; margin-bottom: 15px; }
+        .lang-switcher span { cursor: pointer; margin: 0 5px; font-size: 12px; color: var(--secondary-color); text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>📊 حاسبة أرباح صناع المحتوى</h1>
+    <div class="lang-switcher">
+        <span onclick="setLanguage('ar')">العربية</span> | 
+        <span onclick="setLanguage('fr')">Français</span> | 
+        <span onclick="setLanguage('en')">English</span>
+    </div>
+    
+    <h1 id="title">حاسبة أرباح المحتوى العالمية</h1>
     
     <div class="form-group">
-        <label>منصة المحتوى الرئيسية:</label>
+        <label id="lbl-platform">المنصة:</label>
         <select id="platform">
-            <option value="blog">مدونة إلكترونية (AdSense)</option>
-            <option value="youtube">يوتيوب (فيديوهات طويلة)</option>
-            <option value="tiktok">تيك توك (صندوق المبدعين + هدايا)</option>
-            <option value="podcast">بودكاست (رعايات + إعلانات صوتية)</option>
+            <option value="blog">Blog / Website</option>
+            <option value="youtube">YouTube</option>
+            <option value="tiktok">TikTok</option>
+            <option value="facebook">Facebook (Ads)</option>
+            <option value="instagram">Instagram (Sponsors)</option>
+            <option value="podcast">Podcast</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label>إجمالي المشاهدات / الزيارات شهرياً:</label>
-        <input type="number" id="views" placeholder="أدخل الرقم هنا (مثلاً 50,000)">
+        <label id="lbl-views">المشاهدات الشهرية:</label>
+        <input type="number" id="views" placeholder="100,000">
     </div>
 
     <div class="form-group">
-        <label>الموقع الجغرافي للجمهور:</label>
-        <select id="geo">
-            <option value="0.8">شمال أفريقيا ومصر</option>
-            <option value="1.5">الخليج العربي والمشرق</option>
-            <option value="4.0">أمريكا وأوروبا</option>
+        <label id="lbl-country">الدولة المستهدفة:</label>
+        <select id="country">
+            <optgroup label="Tier 1 (High Pay)">
+                <option value="5">USA / Canada / UK</option>
+                <option value="4.5">Australia / Germany</option>
+            </optgroup>
+            <optgroup label="Tier 2 (Medium Pay)">
+                <option value="2.5">UAE / Saudi Arabia / Qatar</option>
+                <option value="1.8">Algeria / Morocco / Benin</option>
+            </optgroup>
+            <optgroup label="Tier 3 (Global Average)">
+                <option value="1.0">Other Countries / أخرى</option>
+            </optgroup>
         </select>
     </div>
 
-    <button class="btn-calc" onclick="calculate()">تحليل الأرباح المتوقعة</button>
+    <button class="btn-calc" id="btn-calc" onclick="calculate()">احسب الآن</button>
 
     <div id="result" class="result-box">
         <div class="stat-card">
-            <span class="stat-label">الربح الشهري التقديري</span>
+            <span id="lbl-monthly" class="stat-label">الربح الشهري</span>
             <span class="stat-value" id="monthlyResult">$0</span>
         </div>
         <div class="stat-card">
-            <span class="stat-label">الربح السنوي المتوقع</span>
+            <span id="lbl-yearly" class="stat-label">الربح السنوي</span>
             <span class="stat-value" id="yearlyResult">$0</span>
         </div>
-        <p style="font-size: 12px; color: #999; text-align: center;">* ملاحظة: هذه الأرقام تقديرية بناءً على متوسطات الـ CPM لعام 2026.</p>
     </div>
 </div>
 
 <script>
+    const translations = {
+        ar: {
+            title: "حاسبة أرباح المحتوى العالمية",
+            platform: "المنصة:",
+            views: "المشاهدات الشهرية:",
+            country: "الدولة المستهدفة:",
+            btn: "احسب الآن",
+            monthly: "الربح الشهري التقديري",
+            yearly: "الربح السنوي التقديري",
+            dir: "rtl"
+        },
+        en: {
+            title: "Global Content Earnings Calculator",
+            platform: "Platform:",
+            views: "Monthly Views:",
+            country: "Target Country:",
+            btn: "Calculate Now",
+            monthly: "Estimated Monthly Earnings",
+            yearly: "Estimated Yearly Earnings",
+            dir: "ltr"
+        },
+        fr: {
+            title: "Calculateur de Revenus de Contenu",
+            platform: "Plateforme:",
+            views: "Vues Mensuelles:",
+            country: "Pays Ciblé:",
+            btn: "Calculer Maintenant",
+            monthly: "Revenu Mensuel Estimé",
+            yearly: "Revenu Annuel Estimé",
+            dir: "ltr"
+        }
+    };
+
+    function setLanguage(lang) {
+        const t = translations[lang];
+        document.getElementById('title').innerText = t.title;
+        document.getElementById('lbl-platform').innerText = t.platform;
+        document.getElementById('lbl-views').innerText = t.views;
+        document.getElementById('lbl-country').innerText = t.country;
+        document.getElementById('btn-calc').innerText = t.btn;
+        document.getElementById('lbl-monthly').innerText = t.monthly;
+        document.getElementById('lbl-yearly').innerText = t.yearly;
+        document.body.dir = t.dir;
+    }
+
+    // كشف اللغة تلقائياً
+    const userLang = navigator.language || navigator.userLanguage; 
+    if (userLang.startsWith('fr')) setLanguage('fr');
+    else if (userLang.startsWith('ar')) setLanguage('ar');
+    else setLanguage('en');
+
     function calculate() {
         const platform = document.getElementById('platform').value;
         const views = parseFloat(document.getElementById('views').value);
-        const geoWeight = parseFloat(document.getElementById('geo').value);
+        const countryWeight = parseFloat(document.getElementById('country').value);
         
-        if (!views || views <= 0) {
-            alert("يرجى إدخال عدد مشاهدات صحيح");
-            return;
-        }
+        if (!views) return;
 
-        // معامل الربح لكل 1000 مشاهدة (RPM) بناءً على المنصة
         let baseRPM = 0;
         switch(platform) {
-            case 'blog': baseRPM = 1.2; break;    // المدونات
-            case 'youtube': baseRPM = 2.5; break; // يوتيوب
-            case 'tiktok': baseRPM = 0.04; break; // تيك توك (أرباحه مباشرة أقل لكن انتشاره أوسع)
-            case 'podcast': baseRPM = 15.0; break; // البودكاست (أغلى سعر إعلان لكل 1000 مستمع)
+            case 'blog': baseRPM = 1.5; break;
+            case 'youtube': baseRPM = 3.0; break;
+            case 'tiktok': baseRPM = 0.05; break;
+            case 'facebook': baseRPM = 0.6; break;
+            case 'instagram': baseRPM = 2.0; break;
+            case 'podcast': baseRPM = 18.0; break;
         }
 
-        const monthlyTotal = (views / 1000) * baseRPM * geoWeight;
-        const yearlyTotal = monthlyTotal * 12;
-
-        document.getElementById('monthlyResult').innerText = '$' + monthlyTotal.toLocaleString(undefined, {maximumFractionDigits: 0});
-        document.getElementById('yearlyResult').innerText = '$' + yearlyTotal.toLocaleString(undefined, {maximumFractionDigits: 0});
-        
+        const monthly = (views / 1000) * baseRPM * countryWeight;
+        document.getElementById('monthlyResult').innerText = '$' + monthly.toLocaleString(undefined, {maximumFractionDigits: 0});
+        document.getElementById('yearlyResult').innerText = '$' + (monthly * 12).toLocaleString(undefined, {maximumFractionDigits: 0});
         document.getElementById('result').style.display = 'block';
     }
 </script>
