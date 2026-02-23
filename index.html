@@ -1,29 +1,107 @@
-async function convertToPdf() {
-    const { jsPDF } = window.jspdf;
-    const fileInput = document.getElementById('imgInput');
-    
-    if (fileInput.files.length === 0) {
-        alert("يرجى اختيار صورة أولاً!");
-        return;
-    }
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محول الملفات الشامل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/convertapi-js/lib/convertapi.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen">
 
-    const file = fileInput.files[0];
-    const reader = new FileReader();
+    <nav class="bg-white shadow p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-indigo-600">SmartConvert 🚀</h1>
+        <select onchange="changeLang(this.value)" class="border p-1 rounded">
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+        </select>
+    </nav>
 
-    reader.onload = function(event) {
-        const img = new Image();
-        img.src = event.target.result;
-        
-        img.onload = function() {
-            const pdf = new jsPDF(img.width > img.height ? 'l' : 'p', 'px', [img.width, img.height]);
-            const width = pdf.internal.pageSize.getWidth();
-            const height = pdf.internal.pageSize.getHeight();
+    <div class="max-w-5xl mx-auto p-8">
+        <div class="text-center mb-12">
+            <h2 id="main-title" class="text-4xl font-extrabold mb-4">أداة تحويل الملفات الذكية</h2>
+            <p id="main-desc" class="text-gray-600">حول صورك إلى PDF أو ملفات PDF إلى Word بدقة عالية</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             
-            pdf.addImage(img, 'JPEG', 0, 0, width, height);
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-blue-500">
+                <h3 class="text-xl font-bold mb-4">🖼️ تحويل صورة إلى PDF</h3>
+                <input type="file" id="imgInput" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-4"/>
+                <button onclick="imgToPdf()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">تحويل وتحميل PDF</button>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-green-500">
+                <h3 class="text-xl font-bold mb-4">📄 تحويل PDF إلى Word</h3>
+                <input type="file" id="pdfInput" accept=".pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 mb-4"/>
+                <button onclick="pdfToWord()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition">تحويل وتحميل Word</button>
+                <p id="status" class="mt-2 text-sm text-center text-gray-500"></p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // إعداد ConvertAPI - ضع مفتاحك هنا
+        const convertApi = new ConvertApi('YOUR_SECRET_HERE');
+
+        // 1. وظيفة تحويل الصورة إلى PDF (تعمل محلياً)
+        async function imgToPdf() {
+            const { jsPDF } = window.jspdf;
+            const input = document.getElementById('imgInput');
+            if (input.files.length === 0) return alert("اختر صورة!");
+
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    const pdf = new jsPDF(img.width > img.height ? 'l' : 'p', 'px', [img.width, img.height]);
+                    pdf.addImage(img, 'JPEG', 0, 0, img.width, img.height);
+                    pdf.save("converted-image.pdf");
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // 2. وظيفة تحويل PDF إلى Word (عبر API)
+        async function pdfToWord() {
+            const input = document.getElementById('pdfInput');
+            const status = document.getElementById('status');
             
-            // خاصية التحميل التلقائي
-            pdf.save("converted-image.pdf"); 
-        };
-    };
-    reader.readAsDataURL(file);
-}
+            if (input.files.length === 0) return alert("اختر ملف PDF!");
+
+            status.innerText = "⏳ جاري المعالجة والتحويل...";
+
+            try {
+                let params = convertApi.createParams();
+                params.add('File', input.files[0]);
+                
+                let result = await convertApi.convert('pdf', 'docx', params);
+                let url = result.files[0].url;
+
+                // تحميل الملف تلقائياً
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = "document.docx";
+                a.click();
+                
+                status.innerText = "✅ اكتمل التحويل!";
+            } catch (e) {
+                console.error(e);
+                status.innerText = "❌ حدث خطأ (تأكد من مفتاح API)";
+            }
+        }
+
+        // 3. نظام تغيير اللغات بسيط
+        function changeLang(lang) {
+            const isEn = lang === 'en';
+            document.documentElement.dir = isEn ? 'ltr' : 'rtl';
+            document.getElementById('main-title').innerText = isEn ? "Smart File Converter" : "أداة تحويل الملفات الذكية";
+            // يمكنك إضافة باقي النصوص هنا بنفس الطريقة
+        }
+    </script>
+</body>
+</html>
