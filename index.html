@@ -5,21 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Content Earning Calculator 2026</title>
     <style>
-        :root {
-            --primary-color: #4834d4;
-            --secondary-color: #686de0;
-            --bg-color: #f6f9fc;
-            --text-color: #30336b;
-        }
+        :root { --primary-color: #4834d4; --secondary-color: #686de0; --bg-color: #f6f9fc; --text-color: #30336b; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 20px; display: flex; justify-content: center; transition: 0.3s; }
         .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
         h1 { text-align: center; color: var(--primary-color); font-size: 22px; margin-bottom: 25px; }
         .form-group { margin-bottom: 18px; }
         label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-        select, input { width: 100%; padding: 12px; border: 2px solid #edeff2; border-radius: 10px; font-size: 15px; outline: none; transition: 0.3s; }
-        select:focus, input:focus { border-color: var(--primary-color); }
+        select, input { width: 100%; padding: 12px; border: 2px solid #edeff2; border-radius: 10px; font-size: 15px; outline: none; }
         .btn-calc { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border: none; border-radius: 12px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .result-box { margin-top: 25px; display: none; border-top: 2px solid #f1f2f6; pt: 20px; }
+        .result-box { margin-top: 25px; display: none; border-top: 2px solid #f1f2f6; padding-top: 20px; }
         .stat-card { background: #f9f9ff; padding: 15px; border-radius: 12px; margin-bottom: 12px; text-align: center; border-left: 5px solid var(--primary-color); }
         .stat-value { display: block; font-size: 26px; font-weight: 800; color: var(--primary-color); }
         .lang-switcher { text-align: center; margin-bottom: 15px; }
@@ -57,18 +51,7 @@
     <div class="form-group">
         <label id="lbl-country">الدولة المستهدفة:</label>
         <select id="country">
-            <optgroup label="Tier 1 (High Pay)">
-                <option value="5">USA / Canada / UK</option>
-                <option value="4.5">Australia / Germany</option>
-            </optgroup>
-            <optgroup label="Tier 2 (Medium Pay)">
-                <option value="2.5">UAE / Saudi Arabia / Qatar</option>
-                <option value="1.8">Algeria / Morocco / Benin</option>
-            </optgroup>
-            <optgroup label="Tier 3 (Global Average)">
-                <option value="1.0">Other Countries / أخرى</option>
-            </optgroup>
-        </select>
+            </select>
     </div>
 
     <button class="btn-calc" id="btn-calc" onclick="calculate()">احسب الآن</button>
@@ -86,40 +69,58 @@
 </div>
 
 <script>
+    // قائمة الدول مع معاملات الربح (Weight)
+    const countries = [
+        { nameAr: "الولايات المتحدة", nameEn: "USA", nameFr: "États-Unis", weight: 5.0 },
+        { nameAr: "المملكة المتحدة", nameEn: "United Kingdom", nameFr: "Royaume-Uni", weight: 4.8 },
+        { nameAr: "كندا", nameEn: "Canada", nameFr: "Canada", weight: 4.5 },
+        { nameAr: "ألمانيا", nameEn: "Germany", nameFr: "Allemagne", weight: 4.5 },
+        { nameAr: "فرنسا", nameEn: "France", nameFr: "France", weight: 4.0 },
+        { nameAr: "الإمارات", nameEn: "UAE", nameFr: "Émirats Arabes Unis", weight: 3.5 },
+        { nameAr: "السعودية", nameEn: "Saudi Arabia", nameFr: "Arabie Saoudite", weight: 3.0 },
+        { nameAr: "قطر", nameEn: "Qatar", nameFr: "Qatar", weight: 3.0 },
+        { nameAr: "الكويت", nameEn: "Kuwait", nameFr: "Koweït", weight: 2.8 },
+        { nameAr: "الجزائر", nameEn: "Algeria", nameFr: "Algérie", weight: 1.8 },
+        { nameAr: "المغرب", nameEn: "Morocco", nameFr: "Maroc", weight: 1.8 },
+        { nameAr: "مصر", nameEn: "Egypt", nameFr: "Égypte", weight: 1.5 },
+        { nameAr: "تونس", nameEn: "Tunisia", nameFr: "Tunisie", weight: 1.6 },
+        { nameAr: "بنين", nameEn: "Benin", nameFr: "Bénin", weight: 1.4 },
+        { nameAr: "نيجيريا", nameEn: "Nigeria", nameFr: "Nigéria", weight: 1.4 },
+        { nameAr: "البرازيل", nameEn: "Brazil", nameFr: "Brésil", weight: 2.0 },
+        { nameAr: "الهند", nameEn: "India", nameFr: "Inde", weight: 1.2 },
+        { nameAr: "تركيا", nameEn: "Turkey", nameFr: "Turquie", weight: 1.7 },
+        { nameAr: "الأردن", nameEn: "Jordan", nameFr: "Jordanie", weight: 1.5 },
+        { nameAr: "لبنان", nameEn: "Lebanon", nameFr: "Liban", weight: 1.4 },
+        { nameAr: "أخرى", nameEn: "Other", nameFr: "Autre", weight: 1.0 }
+        // يمكن إضافة المزيد هنا بسهولة
+    ];
+
     const translations = {
-        ar: {
-            title: "حاسبة أرباح المحتوى العالمية",
-            platform: "المنصة:",
-            views: "المشاهدات الشهرية:",
-            country: "الدولة المستهدفة:",
-            btn: "احسب الآن",
-            monthly: "الربح الشهري التقديري",
-            yearly: "الربح السنوي التقديري",
-            dir: "rtl"
-        },
-        en: {
-            title: "Global Content Earnings Calculator",
-            platform: "Platform:",
-            views: "Monthly Views:",
-            country: "Target Country:",
-            btn: "Calculate Now",
-            monthly: "Estimated Monthly Earnings",
-            yearly: "Estimated Yearly Earnings",
-            dir: "ltr"
-        },
-        fr: {
-            title: "Calculateur de Revenus de Contenu",
-            platform: "Plateforme:",
-            views: "Vues Mensuelles:",
-            country: "Pays Ciblé:",
-            btn: "Calculer Maintenant",
-            monthly: "Revenu Mensuel Estimé",
-            yearly: "Revenu Annuel Estimé",
-            dir: "ltr"
-        }
+        ar: { title: "حاسبة أرباح المحتوى العالمية", platform: "المنصة:", views: "المشاهدات الشهرية:", country: "الدولة المستهدفة:", btn: "احسب الآن", monthly: "الربح الشهري التقديري", yearly: "الربح السنوي التقديري", dir: "rtl" },
+        en: { title: "Global Content Earnings Calculator", platform: "Platform:", views: "Monthly Views:", country: "Target Country:", btn: "Calculate Now", monthly: "Estimated Monthly Earnings", yearly: "Estimated Yearly Earnings", dir: "ltr" },
+        fr: { title: "Calculateur de Revenus de Contenu", platform: "Plateforme:", views: "Vues Mensuelles:", country: "Pays Ciblé:", btn: "Calculer Maintenant", monthly: "Revenu Mensuel Estimé", yearly: "Revenu Annuel Estimé", dir: "ltr" }
     };
 
+    let currentLang = 'en';
+
+    function fillCountries(lang) {
+        const select = document.getElementById('country');
+        select.innerHTML = '';
+        countries.sort((a, b) => {
+            let nameA = lang === 'ar' ? a.nameAr : (lang === 'fr' ? a.nameFr : a.nameEn);
+            let nameB = lang === 'ar' ? b.nameAr : (lang === 'fr' ? b.nameFr : b.nameEn);
+            return nameA.localeCompare(nameB);
+        });
+        countries.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.weight;
+            opt.innerText = lang === 'ar' ? c.nameAr : (lang === 'fr' ? c.nameFr : c.nameEn);
+            select.appendChild(opt);
+        });
+    }
+
     function setLanguage(lang) {
+        currentLang = lang;
         const t = translations[lang];
         document.getElementById('title').innerText = t.title;
         document.getElementById('lbl-platform').innerText = t.platform;
@@ -129,9 +130,10 @@
         document.getElementById('lbl-monthly').innerText = t.monthly;
         document.getElementById('lbl-yearly').innerText = t.yearly;
         document.body.dir = t.dir;
+        fillCountries(lang);
     }
 
-    // كشف اللغة تلقائياً
+    // كشف اللغة والبدء
     const userLang = navigator.language || navigator.userLanguage; 
     if (userLang.startsWith('fr')) setLanguage('fr');
     else if (userLang.startsWith('ar')) setLanguage('ar');
@@ -141,7 +143,6 @@
         const platform = document.getElementById('platform').value;
         const views = parseFloat(document.getElementById('views').value);
         const countryWeight = parseFloat(document.getElementById('country').value);
-        
         if (!views) return;
 
         let baseRPM = 0;
