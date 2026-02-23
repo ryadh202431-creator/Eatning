@@ -1,11 +1,105 @@
-<div class="tabs">
-    <button onclick="showService('calc')">💰 الحاسبة</button>
-    <button onclick="showService('download')">📥 تحميل فيديو</button>
-</div>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محول الملفات الشامل - All-in-One Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
 
-<div id="downloader-section" style="display:none;">
-    <h2>محمل الفيديوهات العالمي</h2>
-    <input type="text" id="videoUrl" placeholder="الصق رابط الفيديو هنا...">
-    <button class="btn-calc" onclick="goToDownload()">تحميل الآن</button>
-    <p style="font-size:12px;">يدعم: TikTok, FB, Instagram, YouTube</p>
-</div>
+    <nav class="p-4 bg-white shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600" id="app-title">محول الملفات الذكي</h1>
+        <select id="lang-switcher" class="border rounded p-1 text-sm" onchange="changeLanguage(this.value)">
+            <option value="ar">العربية</option>
+            <option value="en">English</option>
+        </select>
+    </nav>
+
+    <div class="max-w-4xl mx-auto p-6">
+        <header class="text-center my-10">
+            <h2 class="text-3xl font-extrabold mb-2" id="hero-title">حول ملفاتك في ثوانٍ</h2>
+            <p class="text-gray-600" id="hero-desc">أداة مجانية وسريعة لتحويل الصور و PDF و Word</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border hover:shadow-lg transition">
+                <div class="text-blue-500 mb-4 text-2xl">🖼️ ➔ 📄</div>
+                <h3 class="font-bold mb-2" id="tool1-title">صور إلى PDF</h3>
+                <input type="file" id="imgInput" accept="image/*" class="hidden">
+                <button onclick="document.getElementById('imgInput').click()" class="w-full bg-blue-500 text-white py-2 rounded mb-2 hover:bg-blue-600">اختر صورة</button>
+                <button onclick="convertToPdf()" class="w-full border border-blue-500 text-blue-500 py-2 rounded hover:bg-blue-50">تحويل</button>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border hover:shadow-lg transition">
+                <div class="text-green-500 mb-4 text-2xl">📄 ➔ 📝</div>
+                <h3 class="font-bold mb-2" id="tool2-title">PDF إلى Word</h3>
+                <input type="file" id="pdfToWordInput" accept=".pdf" class="hidden">
+                <button onclick="document.getElementById('pdfToWordInput').click()" class="w-full bg-green-500 text-white py-2 rounded mb-2 hover:bg-green-600">اختر ملف PDF</button>
+                <button class="w-full border border-green-500 text-green-500 py-2 rounded hover:bg-green-50">بدء التحويل</button>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border hover:shadow-lg transition">
+                <div class="text-red-500 mb-4 text-2xl">📄 ➔ 🖼️</div>
+                <h3 class="font-bold mb-2" id="tool3-title">PDF إلى صور</h3>
+                <input type="file" id="pdfToImgInput" accept=".pdf" class="hidden">
+                <button onclick="document.getElementById('pdfToImgInput').click()" class="w-full bg-red-500 text-white py-2 rounded mb-2 hover:bg-red-600">اختر ملف PDF</button>
+                <button class="w-full border border-red-500 text-red-500 py-2 rounded hover:bg-red-50">استخراج الصور</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // دالة تحويل الصور إلى PDF (باستخدام jsPDF)
+        async function convertToPdf() {
+            const { jsPDF } = window.jspdf;
+            const fileInput = document.getElementById('imgInput');
+            
+            if (fileInput.files.length === 0) {
+                alert("يرجى اختيار صورة أولاً!");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const imgData = event.target.result;
+                const pdf = new jsPDF();
+                pdf.addImage(imgData, 'JPEG', 10, 10, 180, 160);
+                pdf.save("converted.pdf");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // نظام الترجمة والتحكم في اللغات
+        const translations = {
+            ar: {
+                title: "محول الملفات الذكي",
+                heroT: "حول ملفاتك في ثوانٍ",
+                tool1: "صور إلى PDF",
+                dir: "rtl"
+            },
+            en: {
+                title: "Smart Converter",
+                heroT: "Convert Files in Seconds",
+                tool1: "Image to PDF",
+                dir: "ltr"
+            }
+        };
+
+        function changeLanguage(lang) {
+            const t = translations[lang];
+            document.getElementById('app-title').innerText = t.title;
+            document.getElementById('hero-title').innerText = t.heroT;
+            document.getElementById('tool1-title').innerText = t.tool1;
+            document.documentElement.dir = t.dir;
+            document.documentElement.lang = lang;
+        }
+    </script>
+</body>
+</html>
