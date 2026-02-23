@@ -3,104 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محول الملفات الشامل</title>
+    <title>المحول الذكي | Smart Converter</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/convertapi-js/lib/convertapi.js"></script>
 </head>
-<body class="bg-gray-100 text-gray-800 min-h-screen">
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen">
 
-    <nav class="bg-white shadow p-4 flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-indigo-600">SmartConvert 🚀</h1>
-        <select onchange="changeLang(this.value)" class="border p-1 rounded">
+    <nav class="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">🔄</span>
+            <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent" id="nav-title">محول الملفات الشامل</h1>
+        </div>
+        <select onchange="updateLanguage(this.value)" class="bg-gray-50 border border-gray-300 text-sm rounded-lg p-2 focus:ring-blue-500 focus:border-blue-500">
             <option value="ar">العربية</option>
             <option value="en">English</option>
         </select>
     </nav>
 
-    <div class="max-w-5xl mx-auto p-8">
+    <main class="max-w-4xl mx-auto p-6 mt-10">
         <div class="text-center mb-12">
-            <h2 id="main-title" class="text-4xl font-extrabold mb-4">أداة تحويل الملفات الذكية</h2>
-            <p id="main-desc" class="text-gray-600">حول صورك إلى PDF أو ملفات PDF إلى Word بدقة عالية</p>
+            <h2 class="text-3xl font-bold mb-4" id="hero-title">حول ملفاتك بضغطة زر</h2>
+            <p class="text-slate-500" id="hero-desc">خدمة احترافية لتحويل الصور و PDF إلى Word بدقة عالية</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-blue-500">
-                <h3 class="text-xl font-bold mb-4">🖼️ تحويل صورة إلى PDF</h3>
-                <input type="file" id="imgInput" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-4"/>
-                <button onclick="imgToPdf()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">تحويل وتحميل PDF</button>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
+                <div class="bg-blue-50 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mb-4">🖼️</div>
+                <h3 class="text-xl font-bold mb-2" id="card1-title">صور إلى PDF</h3>
+                <p class="text-sm text-slate-500 mb-6" id="card1-desc">حول أي صورة (JPG, PNG) إلى ملف PDF منظم.</p>
+                <input type="file" id="imgInput" accept="image/*" class="hidden">
+                <button onclick="document.getElementById('imgInput').click()" class="w-full py-3 px-4 rounded-xl border-2 border-dashed border-blue-200 text-blue-600 hover:bg-blue-50 transition mb-4 font-medium" id="btn-select-img">اختر الصورة</button>
+                <button onclick="processImageToPdf()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition">تحويل وتحميل PDF</button>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-lg border-t-4 border-green-500">
-                <h3 class="text-xl font-bold mb-4">📄 تحويل PDF إلى Word</h3>
-                <input type="file" id="pdfInput" accept=".pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 mb-4"/>
-                <button onclick="pdfToWord()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition">تحويل وتحميل Word</button>
-                <p id="status" class="mt-2 text-sm text-center text-gray-500"></p>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow border-t-4 border-t-indigo-500">
+                <div class="bg-indigo-50 w-12 h-12 rounded-lg flex items-center justify-center text-2xl mb-4">📄</div>
+                <h3 class="text-xl font-bold mb-2" id="card2-title">PDF إلى Word</h3>
+                <p class="text-sm text-slate-500 mb-6" id="card2-desc">استخرج النصوص والجداول وحولها لملف Docx قابل للتعديل.</p>
+                <input type="file" id="pdfInput" accept=".pdf" class="hidden">
+                <button onclick="document.getElementById('pdfInput').click()" class="w-full py-3 px-4 rounded-xl border-2 border-dashed border-indigo-200 text-indigo-600 hover:bg-indigo-50 transition mb-4 font-medium" id="btn-select-pdf">اختر ملف PDF</button>
+                <button onclick="processPdfToWord()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition">تحويل وتحميل Word</button>
+                <p id="status-msg" class="text-xs mt-3 text-center font-medium"></p>
             </div>
-
         </div>
-    </div>
+    </main>
 
     <script>
-        // إعداد ConvertAPI - ضع مفتاحك هنا
-        const convertApi = new ConvertApi('YOUR_SECRET_HERE');
+        // تفعيل التوكن الخاص بك
+        const convertApi = new ConvertApi('21nxZQCi3XW0KiTmxFXFEs2yNMoPoAqR');
 
-        // 1. وظيفة تحويل الصورة إلى PDF (تعمل محلياً)
-        async function imgToPdf() {
-            const { jsPDF } = window.jspdf;
+        // 1. وظيفة تحويل الصور (محلياً)
+        async function processImageToPdf() {
             const input = document.getElementById('imgInput');
-            if (input.files.length === 0) return alert("اختر صورة!");
+            if (input.files.length === 0) return alert("الرجاء اختيار صورة");
 
+            const { jsPDF } = window.jspdf;
             const file = input.files[0];
             const reader = new FileReader();
-            reader.onload = function(e) {
+
+            reader.onload = (e) => {
                 const img = new Image();
                 img.src = e.target.result;
-                img.onload = function() {
+                img.onload = () => {
                     const pdf = new jsPDF(img.width > img.height ? 'l' : 'p', 'px', [img.width, img.height]);
                     pdf.addImage(img, 'JPEG', 0, 0, img.width, img.height);
-                    pdf.save("converted-image.pdf");
-                }
-            }
+                    pdf.save("converted_image.pdf");
+                };
+            };
             reader.readAsDataURL(file);
         }
 
-        // 2. وظيفة تحويل PDF إلى Word (عبر API)
-        async function pdfToWord() {
+        // 2. وظيفة تحويل PDF إلى Word (عبر التوكن السحابي)
+        async function processPdfToWord() {
             const input = document.getElementById('pdfInput');
-            const status = document.getElementById('status');
+            const status = document.getElementById('status-msg');
             
-            if (input.files.length === 0) return alert("اختر ملف PDF!");
+            if (input.files.length === 0) return alert("الرجاء اختيار ملف PDF");
 
-            status.innerText = "⏳ جاري المعالجة والتحويل...";
+            status.innerText = "⏳ جاري المعالجة.. قد يستغرق ذلك ثواني";
+            status.className = "text-xs mt-3 text-center font-medium text-orange-500";
 
             try {
                 let params = convertApi.createParams();
                 params.add('File', input.files[0]);
                 
+                // طلب التحويل
                 let result = await convertApi.convert('pdf', 'docx', params);
-                let url = result.files[0].url;
-
-                // تحميل الملف تلقائياً
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = "document.docx";
-                a.click();
                 
-                status.innerText = "✅ اكتمل التحويل!";
-            } catch (e) {
-                console.error(e);
-                status.innerText = "❌ حدث خطأ (تأكد من مفتاح API)";
+                // تحميل الملف الناتج
+                await result.saveFiles(); 
+                
+                status.innerText = "✅ تم التحويل بنجاح!";
+                status.className = "text-xs mt-3 text-center font-medium text-green-600";
+            } catch (error) {
+                console.error(error);
+                status.innerText = "❌ حدث خطأ أو انتهى رصيد المحاولات";
+                status.className = "text-xs mt-3 text-center font-medium text-red-600";
             }
         }
 
-        // 3. نظام تغيير اللغات بسيط
-        function changeLang(lang) {
-            const isEn = lang === 'en';
-            document.documentElement.dir = isEn ? 'ltr' : 'rtl';
-            document.getElementById('main-title').innerText = isEn ? "Smart File Converter" : "أداة تحويل الملفات الذكية";
-            // يمكنك إضافة باقي النصوص هنا بنفس الطريقة
+        // 3. نظام ترجمة اللغات
+        const langData = {
+            ar: { nav: "محول الملفات الشامل", hero: "حول ملفاتك بضغطة زر", c1: "صور إلى PDF", c2: "PDF إلى Word", dir: "rtl" },
+            en: { nav: "Multi-Converter", hero: "Convert Files with One Click", c1: "Image to PDF", c2: "PDF to Word", dir: "ltr" }
+        };
+
+        function updateLanguage(lang) {
+            const data = langData[lang];
+            document.documentElement.dir = data.dir;
+            document.getElementById('nav-title').innerText = data.nav;
+            document.getElementById('hero-title').innerText = data.hero;
+            document.getElementById('card1-title').innerText = data.c1;
+            document.getElementById('card2-title').innerText = data.c2;
         }
     </script>
 </body>
